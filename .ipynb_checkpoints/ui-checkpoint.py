@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 import datetime
 from library_management import LibraryManagement
 from engine import engine
+from streamlit_searchbox import st_searchbox
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -14,11 +15,15 @@ st.title("📚 Library Management System")
 # Sidebar for navigation
 menu = st.sidebar.radio("Choose Action", ["Search Book", "Add Book", "Loan Book", "Return Book"])
 
-
 # --- Search Book ---
+def search_books(search_str:str)->list:
+    return [book.title for book in lib.auto_complete_books(search_str)]
 if menu == "Search Book":
     st.header("🔎 Search for a Book")
-    book_title = st.text_input("Enter book title")
+    book_title = st_searchbox(
+    search_books,
+    placeholder="Enter book title ",
+    key="my_key")
     if st.button("Search"):
         result = lib.search_book(book_title)
         if result:
@@ -45,8 +50,7 @@ elif menu == "Add Book":
         submitted = st.form_submit_button("Add Book")
         if submitted:
             lib.add_book(book_title, author_name, genre, publisher, language, copies_total)
-            st.toast(f"✅ Book '{book_title}' added successfully.")
-            st.success(f"✅ Book '{book_title}' added successfully.")
+            st.toast(f"✅ Book added successfully.")
 
 
 # --- Loan Book ---
@@ -72,10 +76,9 @@ elif menu == "Loan Book":
                     borrower_address,
                     loan_days
                 )
-                st.success(f"✅ Book '{book_title}' loaned to {borrower_name} until {datetime.date.today() + datetime.timedelta(days=loan_days)}")
+                st.toast(f"✅ Book have been loaned successfully.")
             except Exception as e:
-                st.error(f"❌ {str(e)}")
-
+                st.toast(f"❌ {str(e)}")
 
 # --- Return Book ---
 elif menu == "Return Book":
@@ -85,6 +88,6 @@ elif menu == "Return Book":
     if st.button("Return Book"):
         try:
             lib.return_book(book_title)
-            st.success(f"✅ Book '{book_title}' returned successfully.")
+            st.toast(f"✅ Book Returend successfully.")
         except Exception as e:
-            st.error(f"❌ {str(e)}")
+            st.toast(f"❌ {str(e)}")

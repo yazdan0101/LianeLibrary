@@ -15,6 +15,14 @@ class LibraryManagement:
     def search_book(self,book_title:str):
         return self.session.query(Book).filter_by(title=book_title).first()
 
+    def auto_complete_books(self, input: str):
+        """Return up to 5 books whose titles contain the input string."""
+        return (
+            self.session.query(Book)
+            .filter(Book.title.ilike(f"%{input}%"))  # case-insensitive match
+            .limit(5)
+            .all()
+        )
     
     def add_book(self,book_title:str,author_name:str,genre:str,publisher:str,language:str,copies_total=1):
         book = self.session.query(Book).filter_by(title=book_title).first()

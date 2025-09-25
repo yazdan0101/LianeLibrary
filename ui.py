@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 import datetime
 from library_management import LibraryManagement
 from engine import engine
+from streamlit_searchbox import st_searchbox
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -14,11 +15,15 @@ st.title("📚 Library Management System")
 # Sidebar for navigation
 menu = st.sidebar.radio("Choose Action", ["Search Book", "Add Book", "Loan Book", "Return Book"])
 
-
 # --- Search Book ---
+def search_books(search_str:str)->list:
+    return [book.title for book in lib.auto_complete_books(search_str)]
 if menu == "Search Book":
     st.header("🔎 Search for a Book")
-    book_title = st.text_input("Enter book title")
+    book_title = st_searchbox(
+    search_books,
+    placeholder="Enter book title ",
+    key="my_key")
     if st.button("Search"):
         result = lib.search_book(book_title)
         if result:
