@@ -24,13 +24,18 @@ if menu == "Search Book":
     search_books,
     placeholder="Enter book title ",
     key="my_key")
-    if st.button("Search"):
+    if st.button("📖 View Book",disabled=book_title is None or book_title==''):
         result = lib.search_book(book_title)
         if result:
-            st.success(f"✅ Found: {result.title} by {result.author.name} ({result.language})")
-            st.write(f"**Genre:** {result.genre}")
-            st.write(f"**Publisher:** {result.publisher}")
-            st.write(f"**Copies Available:** {result.copies_available}/{result.copies_total}")
+            st.success(
+                    f"""
+                    📖 **Title:** {result.title}\n
+                    ✍️ **Author:** {result.author.name}\n
+                    🌐 **Language:** {result.language}\n
+                    🏷️ **Genre:** {result.genre}\n
+                    🏢 **Publisher:** {result.publisher}\n
+                    📦 **Copies Available:** {result.copies_available}/{result.copies_total}
+                    """)
         else:
             st.error("❌ Book not found.")
 
